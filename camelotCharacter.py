@@ -28,6 +28,7 @@ class Character(object):
         self.healingFactor = healingFactor
         self.maxHealing = maxHealing
         self.armor = armor
+#         self.healingPower = healingPower
         
     def testInt(self, value, min = 0, max = 100, default = 0):
         out = default
@@ -105,6 +106,14 @@ class Character(object):
         self.__armor = self.testInt(value, 0, 1000, 0)
         return self.__armor
     
+#     @property
+#     def healingPower(self):
+#         return self.__healingPower
+#     @healingPower.setter
+#     def healingPower(self, value):
+#         self.__healingPower = self.testInt(value, 0, self.maxHealing, 0)
+#         return self.__healingPower
+    
     def printStats(self):
         print(f"""{self.name}
 
@@ -120,8 +129,8 @@ Armor: {self.armor}""")
             hitDamage = random.randrange(1, self.maxDamage)
             hitDamage -= enemy.armor
             if random.randrange(1, 100) <= self.healingFactor:
-                healingPower = random.randrange(1, self.maxHealing)
-                hitDamage -= enemy.healingPower
+                self.healingPower = random.randrange(1, self.maxHealing)
+#                 hitDamage -= enemy.healingPower
                 if hitDamage < 0:
                     hitDamage = 0
                 enemy.hitPoints -= hitDamage
