@@ -13,8 +13,8 @@ def main():
     hero.healingFactor = 20
     hero.maxHealing = 2
     hero.armor = 2
-    hero.printStats()
-    villain.printStats()
+#     hero.printStats()
+#     villain.printStats()
     hero.hit(villain)
     villain.hit(hero)
     
