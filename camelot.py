@@ -49,7 +49,7 @@ class Potion(simpleGE.Sprite):
         self.x = random.randint(0,640)
         self.y = random.randint(0, 480)
         self.healthAdd = random.randint(0, 5)
- 
+        
 class Rowan(simpleGE.Sprite):
     def __init__(self, scene):
         super().__init__(scene)
@@ -72,17 +72,20 @@ class Rowan(simpleGE.Sprite):
 class LblHP(simpleGE.Label):
     def __init__(self):
         super().__init__()
-        self.font = "VinerITC.ttf"
+#         self.font = "Viner ITC"
         self.bgColor = "white"
         self.fgColor = "black"
         self.text = f"HP: 10"
         self.center = (100, 30)
         
-class Combat(simpleGE.Scene):
+class LblTime(simpleGE.Label):
     def __init__(self):
         super().__init__()
-        self.setCaption("Combat")
-        self.tileset = []
+#         self.font = "Viner ITC"
+        self.bgColor = "white"
+        self.fgColor = "black"
+        self.text = f"Time Left: 10:00:00"
+        self.center = (500, 30)
         
 class Game(simpleGE.Scene):
     def __init__(self):
@@ -102,27 +105,31 @@ class Game(simpleGE.Scene):
         self.loadMap()
 
         self.rowan = Rowan(self)
-
-        self.hitPoint = 20
+        
+        self.timer = simpleGE.Timer()
+        self.timer.totalTime = 60
+        self.lblTime = LblTime()
+        
         self.lblHP = LblHP()
         self.lblHP.text = f"HP: {self.rowan.char.hitPoints}"
         
         
         self.enemies = []
         for i in range(5):
-            enemy = Enemy(self)
-            self.enemies.append(enemy)
+            self.enemy = Enemy(self)
+            self.enemies.append(self.enemy)
             
         self.potions = []
         for i in range (4):
-            potion = Potion(self)
-            self.potions.append(potion)
+            self.potion = Potion(self)
+            self.potions.append(self.potion)
             
         self.sprites = [self.tileset,
                         self.rowan,
                         self.enemies,
                         self.potions,
-                        self.lblHP]
+                        self.lblHP,
+                        self.lblTime]
         
     def loadMap(self):
         self.map = [
@@ -168,6 +175,10 @@ class Game(simpleGE.Scene):
                 self.tileset[row][col].setState(currentVal)
     
     def process(self):
+        self.lblTime.text = f"Time Left: {self.timer.getTimeLeft(): .2f}"
+        if self.timer.getTimeLeft() < 0:
+            self.stop()
+            
         if self.isKeyPressed(pygame.K_LEFT):
             if self.offCol > 0:
                 self.offCol -= 1
@@ -192,42 +203,47 @@ class Game(simpleGE.Scene):
         keepGoing = True
         while keepGoing:
             if self.enemy.char.hitPoints <= 0:
-                self.enemies.remove(enemy.char)
+                self.enemies.remove(self.enemy.char)
                 keepGoing = False
             elif rowan.hitPoints <= 0:
                 self.rowan.char.hitPoints = 0
                 game.stop()
                 keepGoing = False
             else:
-                self.enemy.char.hit(rowan)
-                self.rowan.char.hit(enemy)
+                self.enemy.char.hit(self.rowan)
+                self.rowan.char.hit(self.enemy)
+#                 self.hitPoints = self.rowan.char.hitPoints
+
         self.lblHP.text = f"HP: {self.rowan.char.hitPoints}"
         
     def pickUp(self):
         for i in self.potions:
-            if rowan.collideswith(potions):
-                rowan.inventory.append(potion)
+            if self.rowan.collideswith(potions):
+                self.rowan.inventory.append(potion)
     
     def heal(self):
         if Potion() in self.potions:
             self.rowan.char.hitPoints += self.potion.healthAdd
-            rowan.inventory.remove(potion)
+            self.rowan.inventory.remove(self.potion)
+            self.hitPoints = self.rowan.char.hitPoints
         self.lblHP.text = f"HP: {self.rowan.char.hitPoints}"
       
     def characterProcess(self):
         if self.isKeyPressed(pygame.K_SPACE):
             for i in self.enemies:
-                if rowan.collideswith(self.enemy):
+                if self.rowan.tileOver(enemy):
                     self.fight()
         
         if self.isKeyPressed(pygame.K_a):
             for i in self.potions:
-                if rowan.collideswith(self.potions):
+                if self.rowan.tileOver(potion):
+                    self.potions.remove(potion)
                     self.pickUp()
                     
         if self.isKeyPressed(pygame.K_d):
-            if potion in self.potions:
+            if self.potion in self.potions:
                 self.heal()
+                
 class Instructions(simpleGE.Scene):
     def __init__(self):
         super().__init__()
@@ -236,7 +252,7 @@ class Instructions(simpleGE.Scene):
         self.response = "Accept"
         
         self.instructions = simpleGE.MultiLabel()
-        self.bgColor = "bisque"
+        self.bgColor = "white"
         self.fgColor = "black"
         self.instructions.textLines = ["Well met, Traveler! You are Rowan the Swift. Your mission,",
                                        "should you choose to accept it, is to find the magical healing",
@@ -252,13 +268,49 @@ class Instructions(simpleGE.Scene):
         self.instructions.size = (600, 300)
 #         self.instructions.font = pygame.font.match_font("vinerITC")
         
-        self.sprites = [self.instructions]
+        self.btnPlay = simpleGE.Button()
+        self.btnPlay.text = "Accept (up)"
+        self.btnPlay.center = (100, 400)
+        self.btnPlay.bgColor = "white"
+        self.btnPlay.fgColor = "black"
+        
+        self.btnQuit = simpleGE.Button()
+        self.btnQuit.text = "Deny (down)"
+        self.btnQuit.center = (550, 400)
+        self.btnQuit.bgColor = "white"
+        self.btnQuit.fgColor = "black"
+        
+        self.sprites = [self.instructions,
+                        self.btnPlay,
+                        self.btnQuit]
+    def process(self):
+        if self.btnQuit.clicked:
+            self.response = "Deny"
+            self.stop()
+        if self.btnPlay.clicked:
+            self.response = "Accept"
+            self.stop()
+        if self.isKeyPressed(pygame.K_UP):
+            self.response = "Accept"
+            self.stop()
+        if self.isKeyPressed(pygame.K_DOWN):
+            self.response = "Deny"
+            self.stop()
     
 def main():
-    instructions = Instructions()
-    instructions.start()
-#     game = Game()
-#     game.start()
+    keepGoing = True
+    while keepGoing:
+        instructions = Instructions()
+        instructions.start()
+        
+        if instructions.response == "Accept":
+            game = Game()
+            game.start()
+            
+        else:
+            instructions.stop()
+            keepGoing = False
+    game.stop()
     
 if __name__ == "__main__":
     main()
