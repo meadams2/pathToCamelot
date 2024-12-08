@@ -26,12 +26,11 @@ class Enemy(simpleGE.Sprite):
     def __init__(self, scene):
         super().__init__(scene)
         self.char = camelotCharacter.Character()
-        self.hitPoints = random.randint(0, 25)
-        self.hitChance = random.randint(0, 100)
-        self.maxDamage = random.randint(0, 15)
-        self.healingFactor = random.randint(0, 100)
-        self.maxHealing = random.randint(0, 15)
-        self.armor = random.randint(0, 10)
+        self.char.hitPoints = random.randint(0, 20)
+        self.char.hitChance = random.randint(0, 100)
+        self.char.maxDamage = random.randint(0, 10)
+#         self.char.healingFactor = random.randint(0, 100)
+        self.char.armor = random.randint(0, 5)
         self.images = [pygame.image.load("Enemy1.png"),
                        pygame.image.load("Enemy2.png"),
                        pygame.image.load("Enemy3.png"),
@@ -42,18 +41,25 @@ class Enemy(simpleGE.Sprite):
         self.x = random.randint(0, 640)
         self.y = random.randint(0, 480)
 
-class Potion(simpleGE.Sprite):
-    def __init__(self, scene):
         super().__init__(scene)
         self.setImage("healingPotion.png")
         self.x = random.randint(0,640)
-        self.y = random.randint(0, 480)
-        self.healthAdd = random.randint(0, 5)
+# class Potion(simpleGE.Sprite):
+#     def __init__(self, scene):
+#         super().__init__(scene)
+#         self.setImage("healingPotion.png")
+#         self.x = random.randint(0,640)
+#         self.y = random.randint(0, 480)
+#         self.healthAdd = random.randint(0, 5)
         
 class Rowan(simpleGE.Sprite):
     def __init__(self, scene):
         super().__init__(scene)
-        self.char = camelotCharacter.Character("Rowan", 20, 25, 3, 10, 2, 5)
+        self.char = camelotCharacter.Character()
+        self.char.hitPoints = 20
+        self.char.hitChance = 40
+        self.char.maxDamage = 5
+        self.char.armor = 5
         self.setImage("RowanMain.png")
         self.position = (320, 240)
         self.moveSpeed = 2
@@ -86,6 +92,11 @@ class LblTime(simpleGE.Label):
         self.fgColor = "black"
         self.text = f"Time Left: 10:00:00"
         self.center = (500, 30)
+class Elixir(simpleGE.Sprite):
+    def __init__(self, scene):
+        super().__init__(scene)
+        self.setImage("elixirSprite.png")
+        self.position = (600, 275)
         
 class Game(simpleGE.Scene):
     def __init__(self):
@@ -113,21 +124,21 @@ class Game(simpleGE.Scene):
         self.lblHP = LblHP()
         self.lblHP.text = f"HP: {self.rowan.char.hitPoints}"
         
+        self.elixir = Elixir(self)
         
         self.enemies = []
-        for i in range(5):
+        for i in range(3):
             self.enemy = Enemy(self)
             self.enemies.append(self.enemy)
-            
-        self.potions = []
-        for i in range (4):
-            self.potion = Potion(self)
-            self.potions.append(self.potion)
+#         self.potions = []
+#         for i in range (4):
+#             self.potion = Potion(self)
+#             self.potions.append(self.potion)
             
         self.sprites = [self.tileset,
                         self.rowan,
+                        self.elixir,
                         self.enemies,
-                        self.potions,
                         self.lblHP,
                         self.lblTime]
         
@@ -176,6 +187,11 @@ class Game(simpleGE.Scene):
     
     def process(self):
         self.lblTime.text = f"Time Left: {self.timer.getTimeLeft(): .2f}"
+        if self.isKeyPressed(pygame.K_SPACE):
+            for enemy in self.enemies:
+                if self.rowan.collidesWith(enemy):
+                    self.fight()
+                    
         if self.timer.getTimeLeft() < 0:
             self.stop()
             
@@ -205,51 +221,25 @@ class Game(simpleGE.Scene):
             if self.enemy.char.hitPoints <= 0:
                 self.enemies.remove(self.enemy.char)
                 keepGoing = False
-            elif rowan.hitPoints <= 0:
+            elif self.rowan.char.hitPoints <= 0:
                 self.rowan.char.hitPoints = 0
                 game.stop()
                 keepGoing = False
             else:
                 self.enemy.char.hit(self.rowan)
                 self.rowan.char.hit(self.enemy)
+            print(f"""Enemy: {self.enemy.char.hitPoints}
+Rowan: {self.rowan.char.hitPoints}""")
 #                 self.hitPoints = self.rowan.char.hitPoints
 
         self.lblHP.text = f"HP: {self.rowan.char.hitPoints}"
-        
-    def pickUp(self):
-        for i in self.potions:
-            if self.rowan.collideswith(potions):
-                self.rowan.inventory.append(potion)
-    
-    def heal(self):
-        if Potion() in self.potions:
-            self.rowan.char.hitPoints += self.potion.healthAdd
-            self.rowan.inventory.remove(self.potion)
-            self.hitPoints = self.rowan.char.hitPoints
-        self.lblHP.text = f"HP: {self.rowan.char.hitPoints}"
-      
-    def characterProcess(self):
-        if self.isKeyPressed(pygame.K_SPACE):
-            for i in self.enemies:
-                if self.rowan.tileOver(enemy):
-                    self.fight()
-        
-        if self.isKeyPressed(pygame.K_a):
-            for i in self.potions:
-                if self.rowan.tileOver(potion):
-                    self.potions.remove(potion)
-                    self.pickUp()
-                    
-        if self.isKeyPressed(pygame.K_d):
-            if self.potion in self.potions:
-                self.heal()
                 
 class Instructions(simpleGE.Scene):
     def __init__(self):
         super().__init__()
         self.setImage("instructionsScroll.png")
         
-        self.response = "Accept"
+        self.response = "Deny"
         
         self.instructions = simpleGE.MultiLabel()
         self.bgColor = "white"
@@ -261,6 +251,7 @@ class Instructions(simpleGE.Scene):
                                        "Along the way, you will have the opportunity to pick up",
                                        "healing potions to boost your health stats",
                                        "",
+                                       "Press <SPACE> to fight.",
                                        "To win, you must get the elixir to the King within 10 minutes.",
                                        "Do try not to die.",
                                        ]

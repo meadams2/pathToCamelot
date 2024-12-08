@@ -5,13 +5,13 @@ Character Module"""
 import random
 
 def main():
-    villain = Character("Villain", 10, 10, 5, 10, 3, 0)
+    villain = Character("Villain", 10, 10, 5, 0)
     hero = Character()
     hero.hitPoints = 10
     hero.hitChance = 50
     hero.maxDamage = 5
-    hero.healingFactor = 20
-    hero.maxHealing = 2
+#     hero.healingFactor = 20
+#     hero.maxHealing = 2
     hero.armor = 2
 #     hero.printStats()
 #     villain.printStats()
@@ -19,14 +19,14 @@ def main():
     villain.hit(hero)
     
 class Character(object):
-    def __init__(self, name = "Billy Bob John", hitPoints = 10, hitChance = 30, maxDamage = 3, healingFactor = 20, maxHealing = 4, armor = 0):
+    def __init__(self, name = "Billy Bob John", hitPoints = 10, hitChance = 30, maxDamage = 3, armor = 0):
         super().__init__()
         self.name = name
         self.hitPoints = hitPoints
         self.hitChance = hitChance
         self.maxDamage = maxDamage
-        self.healingFactor = healingFactor
-        self.maxHealing = maxHealing
+#         self.healingFactor = healingFactor
+#         self.maxHealing = maxHealing
         self.armor = armor
 #         self.healingPower = healingPower
         
@@ -81,22 +81,22 @@ class Character(object):
     def hitChance(self, value):
         self.__hitChance = self.testInt(value, 0, 100, 0)
         return self.__hitChance
-    
-    @property
-    def healingFactor(self):
-        return self.__healingFactor
-    @healingFactor.setter
-    def healingFactor(self, value):
-        self.__healingFactor = self.testInt(value, 0, 100, 0)
-        return self.__healingFactor
-    
-    @property
-    def maxHealing(self):
-        return self.__maxHealing
-    @maxHealing.setter
-    def maxHealing(self, value):
-        self.__maxHealing = self.testInt(value, 0, 10000, 1)
-        return self.__maxHealing
+#     
+#     @property
+#     def healingFactor(self):
+#         return self.__healingFactor
+#     @healingFactor.setter
+#     def healingFactor(self, value):
+#         self.__healingFactor = self.testInt(value, 0, 100, 0)
+#         return self.__healingFactor
+#     
+#     @property
+#     def maxHealing(self):
+#         return self.__maxHealing
+#     @maxHealing.setter
+#     def maxHealing(self, value):
+#         self.__maxHealing = self.testInt(value, 0, 10000, 1)
+#         return self.__maxHealing
     
     @property
     def armor(self):
@@ -120,19 +120,17 @@ class Character(object):
 HP: {self.hitPoints}
 Hit Chance: {self.hitChance}
 Max Damage: {self.maxDamage}
-Healing Factor: {self.healingFactor}
-Max Healing: {self.maxHealing}
 Armor: {self.armor}""")
         
     def hit(self, enemy):
         if random.randrange(1, 100) <= self.hitChance:
-            hitDamage = random.randrange(1, self.maxDamage)
+            hitDamage = random.randint(1, self.maxDamage)
             hitDamage -= enemy.armor
-            if random.randrange(1, 100) <= self.healingFactor:
-                self.healingPower = random.randrange(1, self.maxHealing)
+#             if random.randrange(1, 100) <= self.healingFactor:
+#                 self.healingPower = random.randrange(1, self.maxHealing)
 #                 hitDamage -= enemy.healingPower
-                if hitDamage < 0:
-                    hitDamage = 0
+            if hitDamage < 0:
+                hitDamage = 0
                 enemy.hitPoints -= hitDamage
             else:
                 hitDamage = 0
