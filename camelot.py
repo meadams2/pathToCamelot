@@ -41,9 +41,6 @@ class Enemy(simpleGE.Sprite):
         self.x = random.randint(0, 640)
         self.y = random.randint(0, 480)
 
-        super().__init__(scene)
-        self.setImage("healingPotion.png")
-        self.x = random.randint(0,640)
 # class Potion(simpleGE.Sprite):
 #     def __init__(self, scene):
 #         super().__init__(scene)
