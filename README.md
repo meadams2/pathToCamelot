@@ -3,6 +3,13 @@
 Well met, Traveler! You are Rowan the Swift. Your mission, should you choose to accept it, is to find the magical healing elixir in the city of Camelot. It's imperative that you are quick about it because the princess's life is at stake. Along the way, you will have the opportunity to pick up healing potions to boost your health stats. Various scoundrels and thieves from Avalon will try to thwart you, but you mustn't let them. 
 
 To win, you must get the elixir to the King within a 10 minute time frame with at least 10 HP. Do try not to die, young knight.
+
+## Where I got Stuck
+
+I had issues getting the potions to work how I wanted, so I ended up ignoring the potions for the time being. Additionally, I ran into issues with the fight class. I also had issues getting a different font to work. 
+
+Potentially in the future, I would play around with a second game file called "pathToCamelot.py" that would ignore multiple inheritances. 
+
 ## Game Design Images
 
 ### Intro Screen
@@ -23,10 +30,7 @@ Very rough sketch of what the gameplay will look like. Tilebased world.
   
 ### Tile Textures
 
--	Grass Texture created by Lamoot under CC-BY 3.0. Link to site: https://opengameart.org/content/grass-texture
--	Path texture created by Dimred under CC-BY 4.0. Link to site: https://opengameart.org/content/seamless-stone-ground-texture.
--	Water texture created by Proxy Games under CC0. Link to site: https://opengameart.org/content/water-texture-pack.
--	Forest texture created by GrEmlin under CC0. Link to site: https://opengameart.org/content/seamless-grass-texture-1.
+-	Grass, Path, Forest, and Water created by Ian Voiral under CC-BY 3.0, GPL 3.0, GPL 2.0. Link to Site: https://opengameart.org/content/basic-map-32x32-by-ivan-voirol
 
 ### Sprites 
 
